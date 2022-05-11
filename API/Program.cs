@@ -23,7 +23,7 @@ if (app.Environment.IsDevelopment ()) {
 }
 
 // app.UseHttpsRedirection();
-SeedDatabase();
+await SeedDatabase();
 app.UseAuthorization ();
 
 app.MapControllers ();
@@ -31,7 +31,7 @@ app.MapControllers ();
 app.Run ();
 
 
-void SeedDatabase()
+async Task SeedDatabase()
 {
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
@@ -39,7 +39,8 @@ void SeedDatabase()
     try
     {
         var context = services.GetRequiredService<DataContext>();
-        context.Database.Migrate();
+        await context.Database.MigrateAsync();
+        await Seed.SeedData(context);
     }
     catch(Exception ex)
     {
